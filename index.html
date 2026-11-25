@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAN LI — Creative Production & GenAI Operations</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root {
+    --bg-paper: #F7F7F5;
+    --bg-ink: #0A0A0A;
+    --bg-terminal: #0B0F19;
+    --accent-lime: #D4F326;
+    --accent-orange: #F97316;
+    --accent-sky: #0284C7;
+    --accent-sky-light: #38BDF8;
+    --border-light: rgba(10, 10, 10, 0.12);
+    --border-dark: rgba(255, 255, 255, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg-paper);
+    color: var(--bg-ink);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #work, #about {
+    scroll-margin-top: 68px;
+  }
+
+  /* 1. INSTRUMENT-STYLE TOP PILL NAVIGATION WITH ROTATING 3-TRACK TICKER */
+  .top-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 4%;
+    background: rgba(247, 247, 245, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-light);
+    gap: 12px;
+  }
+  .nav-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .nav-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: #EAEAE6;
+    color: #0A0A0A;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .nav-pill:hover, .nav-pill.dark {
+    background: #0A0A0A;
+    color: #FFFFFF;
+  }
+
+  .nav-ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #0A0A0A;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    transition: opacity 0.35s ease;
+    text-align: center;
+  }
+  .nav-ticker span.arrow { text-decoration: underline; font-weight: 700; }
+  .nav-ticker.fade { opacity: 0; }
+  @media (max-width: 920px) { .nav-ticker { display: none; } }
+
+  /* 2. COMPACT TOP HERO BANNER (TAGLINE + CV DOWNLOADS ONLY) */
+  .hero-banner {
+    padding: 44px 5% 40px;
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 28px;
+  }
+  .hero-left { max-width: 820px; }
+  .status-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    margin-bottom: 18px;
+    background: #FFFFFF;
+  }
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #16A34A;
+    animation: blink 1.8s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  .hero-headline {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: clamp(38px, 5.4vw, 72px);
+    font-weight: 400;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: #0A0A0A;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent-sky);
+  }
+  .hero-headline .sans-heavy {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 0.78em;
+    letter-spacing: -0.04em;
+  }
+
+  .cta-cluster {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .btn-pill {
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s ease, background 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn-black { background: #0A0A0A; color: #FFFFFF; }
+  .btn-black:hover { background: var(--accent-sky); transform: translateY(-2px); }
+  .btn-ghost { background: #FFFFFF; color: #0A0A0A; border: 1.5px solid #0A0A0A; }
+  .btn-ghost:hover { background: #0A0A0A; color: #FFFFFF; transform: translateY(-2px); }
+
+  /* 3. VISUAL-FIRST WORKS SECTION (UPFRONT + CATEGORY COLOR SYSTEM + POPUP MODAL) */
+  .terminal-section {
+    background: var(--bg-terminal);
+    color: #F8FAFC;
+    padding: 56px 5% 72px;
+  }
+  .terminal-inner { max-width: 1320px; margin: 0 auto; }
+
+  .sec-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 32px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border-dark);
+  }
+  .sec-title-serif {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(32px, 4.2vw, 52px);
+    font-weight: 400;
+    line-height: 1;
+  }
+  .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .filter-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #64748B;
+    margin-right: 4px;
+  }
+  .f-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 7px 15px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: transparent;
+    color: #CBD5E1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  /* Filter Button Category Colors */
+  .f-btn[data-filter="all"].active,
+  .f-btn[data-filter="all"]:hover {
+    background: #FFFFFF;
+    color: #0A0A0A;
+    border-color: #FFFFFF;
+    font-weight: 700;
+  }
+  .f-btn[data-filter="ai"].active,
+  .f-btn[data-filter="ai"]:hover {
+    background: var(--accent-lime);
+    color: #0A0A0A;
+    border-color: var(--accent-lime);
+    font-weight: 700;
+  }
+  .f-btn[data-filter="video"].active,
+  .f-btn[data-filter="video"]:hover {
+    background: var(--accent-orange);
+    color: #FFFFFF;
+    border-color: var(--accent-orange);
+    font-weight: 700;
+  }
+  .f-btn[data-filter="ops"].active,
+  .f-btn[data-filter="ops"]:hover {
+    background: var(--accent-sky);
+    color: #FFFFFF;
+    border-color: var(--accent-sky);
+    font-weight: 700;
+  }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 26px 20px;
+  }
+  .work-card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.28s ease;
+  }
+  .work-card:hover { transform: translateY(-5px); }
+  .work-card.hidden { display: none; }
+
+  .thumb-box {
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: #111827;
+    border: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .thumb-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .work-card:hover .thumb-box img { transform: scale(1.04); }
+
+  /* Category Color Overlay on Thumbnail Images (Reveals full color on hover) */
+  .thumb-box.has-img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    z-index: 1;
+  }
+  .work-card[data-cat="ai"] .thumb-box.has-img::after {
+    background: linear-gradient(180deg, rgba(212, 243, 38, 0.26) 0%, rgba(11, 15, 25, 0.52) 100%);
+  }
+  .work-card[data-cat="video"] .thumb-box.has-img::after {
+    background: linear-gradient(180deg, rgba(249, 115, 22, 0.26) 0%, rgba(11, 15, 25, 0.52) 100%);
+  }
+  .work-card[data-cat="ops"] .thumb-box.has-img::after {
+    background: linear-gradient(180deg, rgba(2, 132, 199, 0.30) 0%, rgba(11, 15, 25, 0.52) 100%);
+  }
+  .work-card:hover .thumb-box.has-img::after {
+    opacity: 0;
+  }
+
+  /* Eye-catching KOL / Reach Pill on Thumbnail */
+  .reach-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(11, 15, 25, 0.88);
+    color: var(--accent-lime);
+    border: 1px solid rgba(212, 243, 38, 0.45);
+    backdrop-filter: blur(6px);
+    z-index: 3;
+  }
+  .work-card[data-cat="video"] .reach-badge {
+    color: #FDBA74;
+    border-color: rgba(249, 115, 22, 0.55);
+  }
+  .work-card[data-cat="ops"] .reach-badge {
+    color: #7DD3FC;
+    border-color: rgba(2, 132, 199, 0.55);
+  }
+
+  /* Graphic Fallback Artwork when no custom image URL is set or image fails */
+  .thumb-art {
+    width: 100%;
+    height: 100%;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .art-lime { background: var(--accent-lime); color: #0A0A0A; }
+  .art-dark { background: #131B2E; color: #FFFFFF; }
+  .art-sky { background: linear-gradient(135deg, #0284C7 0%, #0F172A 100%); color: #FFFFFF; }
+  .art-warm { background: linear-gradient(135deg, #F97316 0%, #7C2D12 100%); color: #FFFFFF; }
+  .art-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 34px;
+    line-height: 1.02;
+  }
+  .art-badge {
+    align-self: flex-start;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.25);
+    color: inherit;
+  }
+  .art-lime .art-badge { background: #0A0A0A; color: var(--accent-lime); }
+
+  .hover-pill {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(10, 10, 10, 0.88);
+    color: var(--accent-lime);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: all 0.2s ease;
+    z-index: 3;
+  }
+  .work-card[data-cat="video"] .hover-pill { color: #FB923C; }
+  .work-card[data-cat="ops"] .hover-pill { color: #38BDF8; }
+  .work-card:hover .hover-pill { opacity: 1; transform: translateY(0); }
+
+  .card-title-clean {
+    font-size: 17px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .card-tag-clean {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #64748B;
+    text-transform: uppercase;
+  }
+
+  /* 4. ABOUT + THREE-TRACK EVOLUTION */
+  .about-reel-section {
+    background: var(--accent-lime);
+    color: #0A0A0A;
+    padding: 72px 5%;
+    border-top: 1px solid #0A0A0A;
+  }
+  .about-container {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.05fr 1.25fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .reel-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .reel-heading {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(28px, 3.6vw, 44px);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 18px;
+  }
+  .about-bio-full {
+    font-size: 15px;
+    line-height: 1.65;
+    color: #1E293B;
+    margin-bottom: 24px;
+  }
+  .about-bio-full strong { color: #0A0A0A; font-weight: 700; }
+
+  .stage-box {
+    background: #121212;
+    color: #FFFFFF;
+    border-radius: 18px;
+    padding: 28px;
+    min-height: 330px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.18);
+  }
+  .slide-item { display: none; animation: fadeIn 0.45s ease; }
+  .slide-item.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .slide-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent-lime);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .slide-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 34px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .slide-body {
+    font-size: 14px;
+    font-weight: 300;
+    color: #CBD5E1;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .slide-metrics { display: flex; gap: 10px; flex-wrap: wrap; }
+  .metric-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    color: #F8FAFC;
+  }
+  .stage-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .play-toggle {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent-lime);
+    color: #0A0A0A;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .progress-bars { display: flex; gap: 8px; flex: 1; max-width: 240px; }
+  .p-bar { height: 3px; flex: 1; background: rgba(255,255,255,0.2); border-radius: 2px; cursor: pointer; }
+  .p-bar.active { background: var(--accent-lime); }
+
+  /* 5. CASE STUDY POP-UP MODAL WITH DYNAMIC CATEGORY THEME + HORIZONTAL GALLERY */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(7, 10, 17, 0.88);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; animation: fadeIn 0.25s ease; }
+  .modal-card {
+    --modal-accent: var(--accent-lime);
+    --modal-btn-text: #0A0A0A;
+    --modal-pill-bg: rgba(212, 243, 38, 0.14);
+    --modal-pill-border: rgba(212, 243, 38, 0.35);
+
+    background: #111827;
+    color: #F8FAFC;
+    border: 1px solid rgba(255,255,255,0.16);
+    border-top: 4px solid var(--modal-accent);
+    border-radius: 20px;
+    max-width: 860px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 32px;
+    position: relative;
+  }
+  /* Dynamic Modal Themes by Category */
+  .modal-card.theme-ai {
+    --modal-accent: #D4F326;
+    --modal-btn-text: #0A0A0A;
+    --modal-pill-bg: rgba(212, 243, 38, 0.14);
+    --modal-pill-border: rgba(212, 243, 38, 0.38);
+  }
+  .modal-card.theme-video {
+    --modal-accent: #F97316;
+    --modal-btn-text: #FFFFFF;
+    --modal-pill-bg: rgba(249, 115, 22, 0.16);
+    --modal-pill-border: rgba(249, 115, 22, 0.42);
+  }
+  .modal-card.theme-ops {
+    --modal-accent: #0284C7;
+    --modal-btn-text: #FFFFFF;
+    --modal-pill-bg: rgba(2, 132, 199, 0.18);
+    --modal-pill-border: rgba(56, 189, 248, 0.42);
+  }
+
+  .modal-close {
+    position: sticky;
+    top: 0;
+    float: right;
+    z-index: 10;
+    background: #1F2937;
+    color: #FFF;
+    border: 1px solid rgba(255,255,255,0.2);
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .modal-close:hover { background: var(--modal-accent); color: var(--modal-btn-text); }
+  .modal-cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--modal-accent);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .modal-card.theme-ops .modal-cat { color: #38BDF8; }
+
+  .modal-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.08;
+    margin-bottom: 14px;
+  }
+  .modal-kpi-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .modal-kpi-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: var(--modal-pill-bg);
+    color: var(--modal-accent);
+    border: 1px solid var(--modal-pill-border);
+  }
+  .modal-card.theme-ops .modal-kpi-pill { color: #7DD3FC; }
+
+  .modal-media {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    background: #0B0F19;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .modal-media img { width: 100%; display: block; }
+
+  /* Horizontal Scroll Filmstrip for Multi-Step Case Studies */
+  .gallery-strip {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 14px 14px 12px;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .gallery-strip:active,
+  .gallery-strip.dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+  .gallery-strip::-webkit-scrollbar { height: 6px; }
+  .gallery-strip::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 3px; }
+  .gallery-slide {
+    flex: 0 0 84%;
+    scroll-snap-align: start;
+    background: #111827;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .gallery-slide img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    background: #070A11;
+    display: block;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  .gallery-video {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #070A11;
+  }
+  .gallery-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  .gallery-caption {
+    padding: 9px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #CBD5E1;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .gallery-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 14px 14px;
+    gap: 12px;
+  }
+  .gallery-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #94A3B8;
+  }
+  .gallery-nav-btns { display: flex; gap: 6px; }
+  .g-btn {
+    background: #1F2937;
+    color: #FFF;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .g-btn:hover { background: var(--modal-accent); color: var(--modal-btn-text); border-color: var(--modal-accent); }
+
+  .modal-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--modal-accent);
+    margin: 16px 0 6px;
+    text-transform: uppercase;
+  }
+  .modal-card.theme-ops .modal-section-label { color: #38BDF8; }
+
+  .modal-desc {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: #CBD5E1;
+  }
+  .modal-actions {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .modal-cta-btn {
+    background: var(--modal-accent);
+    color: var(--modal-btn-text);
+  }
+  .modal-cta-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+  /* 6. FOOTER */
+  .footer-bar {
+    background: #070A11;
+    color: #64748B;
+    padding: 36px 5%;
+    border-top: 1px solid var(--border-dark);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  @media (max-width: 860px) {
+    .hero-banner, .about-container { grid-template-columns: 1fr; }
+    .cta-cluster { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+    .gallery-slide { flex: 0 0 92%; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="top-nav">
+    <div class="nav-group">
+      <a href="#work" class="nav-pill dark" onclick="smoothJump(event, 'work')">Work</a>
+      <a href="#about" class="nav-pill" onclick="smoothJump(event, 'about')">About &amp; 3-Track</a>
+    </div>
+
+    <a href="#about" class="nav-ticker" id="navTicker" onclick="smoothJump(event, 'about')">
+      <span id="tickerText">TRACK 01: 20+ YRS MULTIMEDIA, VIDEO &amp; 3D PRODUCTION</span>
+      <span class="arrow">SEE MORE →</span>
+    </a>
+
+    <div class="nav-group">
+      <a href="https://www.linkedin.com/in/fan-li-00905a5b" target="_blank" class="nav-pill">LinkedIn ↗</a>
+      <a href="mailto:coolbady@hotmail.com" class="nav-pill dark">Contact</a>
+    </div>
+  </nav>
+
+  <header class="hero-banner">
+    <div class="hero-left">
+      <div class="status-bar">
+        <span class="live-dot"></span>
+        <span>FAN LI • HONG KONG SAR • AVAILABLE IMMEDIATELY</span>
+      </div>
+      <h1 class="hero-headline">
+        Bridging <em>creative craft</em>, <span class="sans-heavy">OMNICHANNEL DELIVERY</span>, and <em>applied GenAI workflows.</em>
+      </h1>
+    </div>
+
+    <div class="cta-cluster">
+      <a href="https://drive.google.com/file/d/11vmt_G4OiFJzlxWFTUPiMnXW6iW-kWnU/view?usp=sharing" target="_blank" class="btn-pill btn-black">↓ CV: PM &amp; GenAI Ops</a>
+      <a href="https://drive.google.com/file/d/1G-36E85cDFDTsuyz2cpKQr9dbZOUK_R_/view?usp=sharing" target="_blank" class="btn-pill btn-ghost">↓ CV: Creative &amp; Multimedia</a>
+    </div>
+  </header>
+
+  <section id="work" class="terminal-section">
+    <div class="terminal-inner">
+      <div class="sec-header-row">
+        <h2 class="sec-title-serif">Showcase</h2>
+        <div class="filter-bar">
+          <span class="filter-label">FILTER:</span>
+          <button class="f-btn active" data-filter="all" onclick="filterCards('all', this)">ALL (09)</button>
+          <button class="f-btn" data-filter="ai" onclick="filterCards('ai', this)">AI &amp; POCS</button>
+          <button class="f-btn" data-filter="video" onclick="filterCards('video', this)">VIDEO &amp; 3D</button>
+          <button class="f-btn" data-filter="ops" onclick="filterCards('ops', this)">CRM &amp; SEO</button>
+        </div>
+      </div>
+
+      <div class="work-grid" id="workGrid"></div>
+    </div>
+  </section>
+
+  <section id="about" class="about-reel-section">
+    <div class="about-container">
+      <div>
+        <div class="reel-eyebrow">ABOUT FAN LI // THREE-TRACK EVOLUTION (2004 – 2026)</div>
+        <h2 class="reel-heading">Built across studio production, regional campaigns, and AI prototyping.</h2>
+        <p class="about-bio-full">
+          <strong>Project Manager &amp; Creative Production Lead</strong> with 11+ years at Accenture Song HK and 10 years in commercial CG post-production. Operating across <strong>Multimedia &amp; 3D Craft</strong>, <strong>Multi-Market Content &amp; CRM Delivery</strong>, and <strong>Practical GenAI Automation</strong> — combining hands-on visual storytelling with structured cross-border governance.
+        </p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a href="https://drive.google.com/file/d/11vmt_G4OiFJzlxWFTUPiMnXW6iW-kWnU/view?usp=sharing" target="_blank" class="btn-pill btn-black">↓ Download PM CV</a>
+          <a href="https://drive.google.com/file/d/1G-36E85cDFDTsuyz2cpKQr9dbZOUK_R_/view?usp=sharing" target="_blank" class="btn-pill btn-ghost">↓ Download Creative CV</a>
+        </div>
+      </div>
+
+      <div class="stage-box">
+        <div class="slide-item active" data-slide="0">
+          <span class="slide-tag">TRACK 01 // CREATIVE &amp; 3D PRODUCTION (20+ YRS)</span>
+          <div class="slide-title">Film/TVC Post, 3D CGI &amp; Interactive Spaces</div>
+          <p class="slide-body">Directed 50+ commercial and educational videos from concept to audio mixing; produced Unreal VR experiences, AR proof-of-concepts, LED wall content, and 3D physical papercraft prototyping.</p>
+          <div class="slide-metrics">
+            <span class="metric-chip">3ds Max / ZBrush</span>
+            <span class="metric-chip">Unreal VR &amp; AR</span>
+            <span class="metric-chip">50+ Video Productions</span>
+          </div>
+        </div>
+
+        <div class="slide-item" data-slide="1">
+          <span class="slide-tag">TRACK 02 // DIGITAL CONTENT, CRM &amp; SEO (11+ YRS)</span>
+          <div class="slide-title">APAC Content Supply Chains &amp; Governance</div>
+          <p class="slide-body">Led multi-market CRM, CMS, member portal revamps, and SEO operations across HK, TW, KR, and 4 offshore hubs under strict banking and insurance compliance standards.</p>
+          <div class="slide-metrics">
+            <span class="metric-chip">HK • TW • KR • APAC</span>
+            <span class="metric-chip">CRM &amp; SEO Ops</span>
+            <span class="metric-chip">Financial Compliance</span>
+          </div>
+        </div>
+
+        <div class="slide-item" data-slide="2">
+          <span class="slide-tag">TRACK 03 // GENAI WORKFLOWS &amp; WEB POCS</span>
+          <div class="slide-title">Prompt Frameworks &amp; Live Data Pipelines</div>
+          <p class="slide-body">Authored enterprise GenAI prompt-engineering curricula (RTA &amp; CRISPE) and deployed independent automated monitoring web apps (Alpha Desk Live, TenderWatch UK, BMVWatch UK).</p>
+          <div class="slide-metrics">
+            <span class="metric-chip">RTA &amp; CRISPE Training</span>
+            <span class="metric-chip">3 Live Web PoCs</span>
+            <span class="metric-chip">GenAI Video Pipelines</span>
+          </div>
+        </div>
+
+        <div class="stage-controls">
+          <button class="play-toggle" id="playBtn" title="Pause/Play">❚❚</button>
+          <div class="progress-bars">
+            <div class="p-bar active" onclick="goSlide(0)"></div>
+            <div class="p-bar" onclick="goSlide(1)"></div>
+            <div class="p-bar" onclick="goSlide(2)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer-bar">
+    <span>FAN LI — HONG KONG SAR • +852 9768 5626 • COOLBADY@HOTMAIL.COM</span>
+    <span>Last updated: November 26, 2026</span>
+  </footer>
+
+  <div class="modal-backdrop" id="caseModal" onclick="closeModal(event)">
+    <div class="modal-card theme-ai" id="modalCard" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="forceCloseModal()">✕</button>
+      <span class="modal-cat" id="mCat">CATEGORY</span>
+      <h3 class="modal-title" id="mTitle">Project Title</h3>
+      <div class="modal-kpi-strip" id="mKpis"></div>
+      <div class="modal-media" id="mMedia"></div>
+      <div class="modal-section-label">Description</div>
+      <p class="modal-desc" id="mDescription"></p>
+      <div class="modal-actions" id="mActions"></div>
+    </div>
+  </div>
+
+<script>
+  /* =========================================================================
+     PORTFOLIO DATA STORE (Direct raw.githubusercontent.com CDN URLs + Fallback)
+     ========================================================================= */
+  const RAW_BASE = "https://raw.githubusercontent.com/coolbady/portfolio-site/main";
+
+  const projects = [
+    {
+      id: "Social Content",
+      cat: "video",
+      tag: "#Social Content",
+      reachBadge: "#Social Content",
+      title: "Social Content",
+      subtitle: "Communications In Visual",
+      thumbUrl: `${RAW_BASE}/assets/social/social_thumb.jpg`,
+      kpis: [
+        "BAU Social Content",
+        "Social Campaign Promote",
+        "Activation Promote"
+      ],
+      gallery: [
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/p3BbXX0GzOw?rel=0",
+          caption: "01 // Theme Park Social Content"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/9txyQzMO-_0?rel=0",
+          caption: "02 // Theme Park Activation Promote"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/izPOx-XCiQs?rel=0",
+          caption: "03 // Theme Park Activation Promote"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/Ppf8DryOe4s?rel=0",
+          caption: "04 // Theme Park Anniversary Campaign"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/Vcq5HaUhTR8?rel=0",
+          caption: "05 // Theme Park Anniversary Campaign"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/5CF_JPQiXsU?rel=0",
+          caption: "06 // Theme Park Social Content"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/hIKRF34f0C8?rel=0",
+          caption: "07 // Theme Park Social Content"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/Y4p0j_WT2a4?rel=0",
+          caption: "08 // Brand Social Content"
+        }
+      ],
+      artClass: "art-warm",
+      artHeading: "Social<br><em>Content Reels</em>",
+      description: "From everyday social pulse to marquee campaign moments—crafted short-form reels and promotional edits that translated entertainment and brand storytelling across BAU feeds, milestone anniversaries, and live activations. Additional works are omitted due to restrictions."
+    },
+    {
+      id: "video-reel",
+      cat: "video",
+      tag: "#Reels",
+      reachBadge: "#VIDEO & INTERACTIVE",
+      title: "Video Reels",
+      subtitle: "From Creative To Postproduction",
+      thumbUrl: `${RAW_BASE}/assets/thumbs/reels_thumb_2.jpg`,
+      kpis: [
+        "50+ Commercial & Educational Videos",
+        "Animation • Motion Graphics",
+        "Concept-to-Post Direction"
+      ],
+      gallery: [
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/rkB9F-FQzyk?rel=0",
+          caption: "01 // Brand Launch Explainer Animation"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/vBmBlWfWQxg?rel=0",
+          caption: "02 // Corporate Event Promote Motion Graphic"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/gH3ItgSvR_Q?rel=0",
+          caption: "03 // Storytelling POC Explainer"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/4Mil0c7A-Ws?rel=0",
+          caption: "04 // Award Submission Reels"
+        }
+      ],
+      artClass: "art-warm",
+      artHeading: "Curated<br><em>Video &amp; 3D Reels</em>",
+      description: "Enterprise campaigns and brand launches require clear visual storytelling. From first frame to final cut—shaped brand launch animations, corporate event motion graphics, storytelling PoCs, and award reels across 50+ commercial and educational productions from concept to post-production. Additional commercial projects remain confidential under restrictions."
+    },
+    {
+      id: "Interactive Experience",
+      cat: "video",
+      tag: "#Interactive Experience",
+      reachBadge: "#Interactive Experience",
+      title: "Campaign Activation & Interactive Experience",
+      subtitle: "AR/VR & Gamification",
+      thumbUrl: `${RAW_BASE}/assets/thumbs/interactive_thumb.jpg`,
+      kpis: [
+        "Immersive Experience",
+        "O2O",
+        "Virtual Reality"
+      ],
+      gallery: [
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/lBdGpvT_q00?rel=0",
+          caption: "01 // Brand O2O Event - Experience & Interior Design"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/PE5WVzpiuHo?rel=0",
+          caption: "02 // Brand O2O Event - Experience & Interior Design"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/mhbrU3lq6r8?rel=0",
+          caption: "03 // Theme Park Campaign Activation"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/7QJRKHsgYLA?rel=0",
+          caption: "04 // Brand Offline Campaign"
+        },
+        {
+          type: "image",
+          url: `${RAW_BASE}/assets/Marlboro/collage_landscape_v4.png`,
+          caption: "05 // Brand Offline Event Interior Design & Mockup"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/DLQdcr272WQ?rel=0",
+          caption: "06 // VR Car Configuration POC"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/mUNCdv0w7Dk?rel=0",
+          caption: "07 // AR Mobile Game"
+        },
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/m5zyfoOAwSE?rel=0",
+          caption: "08 // AR Map Finder POC"
+        }
+      ],
+      artClass: "art-warm",
+      artHeading: "Interactive<br><em>O2O &amp; VR/AR</em>",
+      description: "Bridged physical spaces and interactive screens—crafting O2O event environments, interior mockups, and live campaign activations alongside tactile VR/AR prototypes, from a virtual automotive configurator to mobile AR gaming and spatial wayfinding. Additional works are omitted due to restrictions.",
+      liveUrl: "https://www.facebook.com/share/v/1A3fS3g8FE/",
+      liveLabel: "Watch Facebook O2O Reel ↗"
+    },
+    {
+      id: "papercraft-3d",
+      cat: "video",
+      tag: "#3D IP & KOL BRANDING",
+      reachBadge: "#3D IP & KOL BRANDING",
+      title: "3D Papercraft Character Headpiece",
+      subtitle: "2D IP to 3D Mesh & Wearable Physical Build",
+      thumbUrl: `${RAW_BASE}/assets/paper_head/thumb3.jpg`,
+      kpis: [
+        "74,000+ YouTube Subscribers",
+        "14-Part Die-Cut Engineering",
+        "3ds Max → Pepakura → Live Filming"
+      ],
+      gallery: [
+        { url: `${RAW_BASE}/assets/paper_head/3dmax_view.png`, caption: "01 // 3ds Max Low-Poly Topology & UV Texture Mapping from 2D Art" },
+        { url: `${RAW_BASE}/assets/paper_head/pepakura_desinger_view2.png`, caption: "02 // Pepakura Designer 3D-to-2D Unfolding (H394 × W337 × D351mm, 14 Parts)" },
+        { url: `${RAW_BASE}/assets/paper_head/live_preview.jpeg`, caption: "03 // Physical Low-Poly Wearable Prototype Assembly" },
+        { url: `${RAW_BASE}/assets/paper_head/Screenshot%202026-11-24%20163549.png`, caption: "04 // Live On-Camera Deployment on 74K+ Subscriber Finance Channel" }
+      ],
+      artClass: "art-warm",
+      artHeading: "3D Papercraft<br><em>Headpiece</em>",
+      problem: "A fast-growing finance & macro YouTuber (74K+ subscribers) needed a signature, recognizable on-camera persona that preserved anonymity while translating their 2D avatar into a lightweight, comfortable physical headpiece.",
+      solution: "Engineered the 3D low-poly mesh in 3ds Max from 2D character art, unfolded the geometry in Pepakura Designer into a 14-part precision die-cut template, and fabricated the wearable physical prop now featured across the channel's episodes and thumbnails.",
+      liveUrl: "",
+      liveLabel: ""
+    },
+    {
+      id: "alpha-desk",
+      cat: "ai",
+      tag: "#AI & DATA POC",
+      title: "Alpha Desk Live",
+      subtitle: "Real-Time Financial Intelligence Terminal",
+      thumbUrl: `${RAW_BASE}/assets/alpha%20desk/thumb3.jpg`,
+      kpis: [
+        "Automated Pre-Market Briefs",
+        "Sentiment + Multi-Index Feeds",
+        "Live TradingView & LLM Synthesis"
+      ],
+      gallery: [
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/b4OXNOjfCa8?autoplay=1&mute=1&rel=0",
+          caption: "01 // Alpha Desk Live — Automated Morning Intelligence Walkthrough"
+        }
+      ],
+      artClass: "art-dark",
+      artHeading: "Alpha Desk<br><em>Live Terminal</em>",
+      problem: "Fragmented macro headlines, Fear & Greed sentiment, and multi-index price feeds slow down daily pre-market synthesis.",
+      solution: "Designed and built an automated morning intelligence terminal combining structured LLM market summaries, sentiment ratings, FinTwit feeds, and live TradingView charts.",
+      liveUrl: "https://sites.google.com/view/alphadesklive/alpha-desk-live-%E7%92%B0%E7%90%83%E9%87%91%E8%9E%8D%E4%BA%A4%E6%98%93%E5%93%A1%E6%99%A8%E5%A0%B1%E7%B5%82%E7%AB%AF",
+      liveLabel: "Launch Live PoC ↗"
+    },
+    {
+      id: "tender-watch",
+      cat: "ai",
+      tag: "#AUTOMATION POC",
+      title: "TenderWatch UK",
+      subtitle: "15-Min Public Procurement Alert Pipeline",
+      thumbUrl: `${RAW_BASE}/assets/tender%20watch/thumb_v1.jpg`,
+      kpis: [
+        "15-Min UK Contracts Finder Polling",
+        "SQLite Deduplication + Telegram VIP/Preview",
+        "Whop Subscription Automation + Apollo & GSC Setup"
+      ],
+      gallery: [
+        {
+          url: `${RAW_BASE}/assets/tender%20watch/1.png`,
+          caption: "01 // Landing Experience — 15-Min Contracts Finder Polling & Freemium Funnel"
+        },
+        {
+          url: `${RAW_BASE}/assets/tender%20watch/2.png`,
+          caption: "02 // Live Procurement Feed — Auto-Tagged CPV Sectors, Budgets & Deadlines"
+        },
+        {
+          url: `${RAW_BASE}/assets/tender%20watch/3.png`,
+          caption: "03 // Dual-Channel Delivery — Telegram VIP Push & Mobile-Optimized Email Alerts"
+        },
+        {
+          url: `${RAW_BASE}/assets/tender%20watch/4.png`,
+          caption: "04 // Organic Acquisition — SEO & GEO Pillar Guide for UK Public Procurement"
+        }
+      ],
+      artClass: "art-lime",
+      artHeading: "TenderWatch<br><em>UK Monitor</em>",
+      problem: "Manual tracking of UK Contracts Finder notices causes SMEs to miss relevant public tenders or lose bid preparation time.",
+      solution: "Built an automated ingestion pipeline polling UK procurement feeds every 15 minutes, tagging buyer sectors, and dispatching instant Telegram & email alerts.",
+      liveUrl: "https://tenderwatch-uk.co.uk/",
+      liveLabel: "Launch Live PoC ↗"
+    },
+    {
+      id: "bmv-watch",
+      cat: "ai",
+      tag: "#AUTOMATION POC",
+      title: "BMVWatch UK",
+      subtitle: "Below-Market-Value Property Tracker",
+      thumbUrl: `${RAW_BASE}/assets/thumbs/BMV_thumb.jpg`,
+      kpis: [
+        "Live Below-Market Discount Scoring",
+        "Motivated Deal Tags",
+        "Live Web PoC & Signal Grid"
+      ],
+      gallery: [
+        {
+          type: "youtube",
+          url: "https://www.youtube.com/embed/1ilTOGfm9pM?rel=0",
+          caption: "01 // BMVWatch UK — Live Deal Signal Grid & Discount Filtering"
+        }
+      ],
+      artClass: "art-sky",
+      artHeading: "BMVWatch<br><em>Signal Grid</em>",
+      problem: "Spotting genuine price reductions, chain-free, or auction deals across UK cities requires continuous baseline filtering.",
+      solution: "Created a live listing tracker calculating percentage drops and surfacing motivated signals (#PriceReduced, #Auction, #ChainFree) in a filterable card grid.",
+      liveUrl: "https://web-production-d0fd61f9.up.railway.app/",
+      liveLabel: "Launch Live PoC ↗"
+    },
+    {
+      id: "crm-seo",
+      cat: "ops",
+      tag: "#CRM & SEO OPERATIONS",
+      title: "APAC Omnichannel CRM & SEO Delivery",
+      subtitle: "Multi-Market Rollouts (HK / TW / KR / APAC)",
+      thumbUrl: "",
+      artClass: "art-sky",
+      artHeading: "Omnichannel<br><em>CRM &amp; SEO Ops</em>",
+      problem: "Scaling localized CRM email lifecycles and regulated financial SEO articles across multiple APAC markets without bottlenecks.",
+      solution: "Managed multi-market eDM/CMS delivery (HK/TW/KR) for global luxury beauty and coordinated 4 offshore production hubs for regulated APAC insurance SEO content under strict compliance.",
+      liveUrl: "",
+      liveLabel: ""
+    },
+    {
+      id: "genai-video",
+      cat: "ai",
+      tag: "#GENAI PRODUCTION",
+      title: "GenAI Video & Automated Pipelines",
+      subtitle: "AI-Assisted Storyboarding & Visual Workflows",
+      thumbUrl: "",
+      artClass: "art-dark",
+      artHeading: "GenAI Video &<br><em>Visual Pipelines</em>",
+      problem: "Traditional video pre-visualization and multi-variant asset adaptation require long turnaround cycles.",
+      solution: "Combining AI video generation workflows with structured prompt engineering (RTA & CRISPE) to accelerate visual prototyping and content production. YouTube reel uploading soon.",
+      liveUrl: "",
+      liveLabel: ""
+    }
+  ];
+
+  // Smooth jump helper to avoid Google Sites iframe overscroll/crop
+  function smoothJump(e, targetId) {
+    if (e) e.preventDefault();
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // Auto-Fallback Handler if any image fails to load
+  function handleThumbError(imgEl) {
+    const box = imgEl.closest('.thumb-box');
+    if (box) box.classList.remove('has-img');
+    const pill = box ? box.querySelector('.reach-badge') : null;
+    if (pill) pill.style.display = 'none';
+    imgEl.style.display = 'none';
+    if (imgEl.nextElementSibling) {
+      imgEl.nextElementSibling.style.display = 'flex';
+    }
+  }
+
+  // Render Visual-First Cards with Category Color Overlays & Unified Top Pill
+  const grid = document.getElementById('workGrid');
+  function renderGrid() {
+    grid.innerHTML = projects.map((p, idx) => {
+      const topPill = p.reachBadge || p.tag;
+      return `
+      <article class="work-card" data-cat="${p.cat}" onclick="openModal(${idx})">
+        <div class="thumb-box ${p.thumbUrl ? 'has-img' : ''}">
+          ${p.thumbUrl ? `<span class="reach-badge">${topPill}</span>` : ''}
+          ${p.thumbUrl ? `<img src="${p.thumbUrl}" alt="${p.title}" loading="lazy" onerror="handleThumbError(this)">` : ''}
+          <div class="thumb-art ${p.artClass}" style="${p.thumbUrl ? 'display:none;' : ''}">
+            <span class="art-badge">${p.tag}</span>
+            <div class="art-title">${p.artHeading}</div>
+          </div>
+          <span class="hover-pill">VIEW CASE +</span>
+        </div>
+        <h3 class="card-title-clean">${p.title}</h3>
+        <div class="card-tag-clean">${p.tag} • ${p.subtitle}</div>
+      </article>
+    `;
+    }).join('');
+  }
+  renderGrid();
+
+  // Horizontal Gallery Scroll Helper & Drag-to-Scroll Controller
+  function scrollGallery(dir) {
+    const strip = document.getElementById('modalGalleryStrip');
+    if (strip) strip.scrollBy({ left: dir * 520, behavior: 'smooth' });
+  }
+
+  function initGalleryDrag(strip) {
+    if (!strip) return;
+    let isDown = false, startX = 0, scrollLeftStart = 0;
+
+    strip.addEventListener('mousedown', (e) => {
+      isDown = true;
+      strip.classList.add('dragging');
+      startX = e.pageX - strip.offsetLeft;
+      scrollLeftStart = strip.scrollLeft;
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!isDown) return;
+      isDown = false;
+      strip.classList.remove('dragging');
+    });
+
+    strip.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - strip.offsetLeft;
+      const walk = (x - startX) * 1.25;
+      strip.scrollLeft = scrollLeftStart - walk;
+    });
+  }
+
+  // Case Study Pop-up Modal with Dynamic Category Theme
+  function openModal(idx) {
+    const p = projects[idx];
+    const modalCard = document.getElementById('modalCard');
+    modalCard.classList.remove('theme-ai', 'theme-video', 'theme-ops');
+    modalCard.classList.add(`theme-${p.cat}`);
+
+    document.getElementById('mCat').textContent = `${p.tag} // ${p.subtitle}`;
+    document.getElementById('mTitle').textContent = p.title;
+    document.getElementById('mDescription').textContent = p.description || [p.problem, p.solution].filter(Boolean).join(' ');
+
+    // KPI Strip
+    const kpiBox = document.getElementById('mKpis');
+    if (p.kpis && p.kpis.length) {
+      kpiBox.innerHTML = p.kpis.map(k => `<span class="modal-kpi-pill">${k}</span>`).join('');
+      kpiBox.style.display = 'flex';
+    } else {
+      kpiBox.innerHTML = '';
+      kpiBox.style.display = 'none';
+    }
+
+    // Media Area: Horizontal Filmstrip Gallery > Single Image > Graphic Fallback
+    const mediaBox = document.getElementById('mMedia');
+    if (p.gallery && p.gallery.length) {
+      mediaBox.innerHTML = `
+        <div class="gallery-strip" id="modalGalleryStrip">
+          ${p.gallery.map(item => `
+            <div class="gallery-slide">
+              ${item.type === 'youtube'
+                ? `<div class="gallery-video">
+                     <iframe src="${item.url}" title="${item.caption}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                   </div>`
+                : `<img src="${item.url}" alt="${item.caption}" draggable="false">`
+              }
+              <div class="gallery-caption">${item.caption}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="gallery-footer">
+          <span class="gallery-hint">← DRAG OR SCROLL HORIZONTALLY (${p.gallery.length} FRAMES) →</span>
+          <div class="gallery-nav-btns">
+            <button type="button" class="g-btn" onclick="scrollGallery(-1)">‹ PREV</button>
+            <button type="button" class="g-btn" onclick="scrollGallery(1)">NEXT ›</button>
+          </div>
+        </div>
+      `;
+      mediaBox.style.display = 'block';
+      initGalleryDrag(document.getElementById('modalGalleryStrip'));
+    } else if (p.thumbUrl) {
+      mediaBox.innerHTML = `<img src="${p.thumbUrl}" alt="${p.title}" onerror="this.parentElement.style.display='none'">`;
+      mediaBox.style.display = 'block';
+    } else {
+      mediaBox.innerHTML = `<div class="thumb-art ${p.artClass}" style="min-height:180px;">
+        <span class="art-badge">${p.tag}</span>
+        <div class="art-title">${p.artHeading}</div>
+      </div>`;
+      mediaBox.style.display = 'block';
+    }
+
+    // Dynamic Theme CTA Button
+    const actions = document.getElementById('mActions');
+    actions.innerHTML = p.liveUrl
+      ? `<a href="${p.liveUrl}" target="_blank" class="btn-pill modal-cta-btn">${p.liveLabel}</a>`
+      : `<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#64748B;">● Full walkthrough &amp; anonymized artifacts available upon request</span>`;
+
+    document.getElementById('caseModal').classList.add('open');
+  }
+  function closeModal(e) { if (e.target.id === 'caseModal') forceCloseModal(); }
+  function forceCloseModal() {
+    document.getElementById('caseModal').classList.remove('open');
+    document.getElementById('mMedia').innerHTML = '';
+  }
+
+  // Top Nav Rotating 3-Track Ticker
+  const tickerItems = [
+    "TRACK 01: 20+ YRS MULTIMEDIA, VIDEO & 3D PRODUCTION",
+    "TRACK 02: 11+ YRS APAC CRM, CMS & SEO CONTENT DELIVERY",
+    "TRACK 03: GENAI WORKFLOWS (RTA/CRISPE) & LIVE WEB POCS"
+  ];
+  let tIdx = 0;
+  const tickerEl = document.getElementById('navTicker');
+  const tickerText = document.getElementById('tickerText');
+  setInterval(() => {
+    tickerEl.classList.add('fade');
+    setTimeout(() => {
+      tIdx = (tIdx + 1) % tickerItems.length;
+      tickerText.textContent = tickerItems[tIdx];
+      tickerEl.classList.remove('fade');
+    }, 350);
+  }, 3800);
+
+  // Bottom 3-Track Autoplay Reel Controller
+  let current = 0, playing = true;
+  const slides = document.querySelectorAll('.slide-item');
+  const bars = document.querySelectorAll('.p-bar');
+  const playBtn = document.getElementById('playBtn');
+  function goSlide(idx) {
+    slides[current].classList.remove('active');
+    bars[current].classList.remove('active');
+    current = idx;
+    slides[current].classList.add('active');
+    bars[current].classList.add('active');
+  }
+  setInterval(() => { if (playing) goSlide((current + 1) % slides.length); }, 4200);
+  playBtn.addEventListener('click', () => {
+    playing = !playing;
+    playBtn.textContent = playing ? '❚❚' : '▶';
+  });
+
+  // Category Filter Controller
+  function filterCards(cat, btn) {
+    document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.work-card').forEach(card => {
+      card.classList.toggle('hidden', cat !== 'all' && card.dataset.cat !== cat);
+    });
+  }
+</script>
+</body>
+</html>
